@@ -1,0 +1,22 @@
+---
+# Sample configuration file for VMware Guest dynamic inventory
+plugin: community.vmware.vmware_vm_inventory
+strict: false
+validate_certs: false
+with_tags: true
+resources:
+  - datacenter:
+      - SagelyDC
+    resources:
+      - folder:
+        - Demo
+hostnames:
+  - 'config.name'
+properties:
+  - 'config.name'
+  - 'config.guestId'
+  - 'guest.hostName'
+  - 'guest.ipAddress'
+  - 'guest.guestFamily'
+  - 'guest.ipStack'
+...

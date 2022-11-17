@@ -1,0 +1,71 @@
+---
+- name: Deploy RHEL8 VM
+  hosts: rhel_app_server
+  gather_facts: false
+  vars_files:
+    - ../vaults/template.yml
+  vars:
+    vm_memory: 4096
+
+  tasks:
+  - name: Assert that RAM is less than 16384
+    ansible.builtin.assert:
+      that: vm_memory <= 16384
+
+  - name: Create the VM
+    community.vmware.vmware_guest:
+      datacenter: 'SagelyDC'
+      folder: /vm/Demo
+      resource_pool: Demo
+      name: '{{ inventory_hostname }}'
+      state: poweredon
+      guest_id: rhel8_64Guest
+      annotation: "Test"
+      disk:
+        - size_gb: 20
+          type: thin
+          datastore: 'EVO2TB'
+      networks:
+        - name: DPG-Sandbox
+          dvswitch_name: DSwitch001
+          ip: '{{ ansible_host }}'
+          netmask: 255.255.240.0
+          gateway: 192.168.16.1
+          dns_servers:
+            - 192.168.16.1
+          start_connected: true
+          connected: true
+          type: static
+      hardware:
+        memory_mb: '{{ vm_memory }}'
+        num_cpus: 2
+      customization:
+        dns_servers:
+          - 192.168.16.1
+        domain: demo.toal.ca
+        hostname: '{{ inventory_hostname }}'
+      template: 'rhel81-x64-v1'
+      wait_for_ip_address: false
+    delegate_to: localhost
+    throttle: 1
+
+- name: Deploy RHEL8 VM
+  hosts: rhel_app_server
+  gather_facts: false
+  vars_files:
+    - ../vaults/template.yml
+  tasks:
+  - name: Wait for host to be up
+    ansible.builtin.wait_for_connection:
+
+  - name: Gather facts
+    ansible.builtin.gather_facts:
+
+
+  # Ugly.  Please fix. :)
+  - name: Register VM to Satellite
+    become: true
+    ansible.builtin.shell:
+      cmd: "curl -sS --insecure 'https://satellite1.mgmt.toal.ca/register?hostgroup_id=9&location_id=2&operatingsystem_id=12&organization_id=1&setup_insights=true&setup_remote_execution=true&update_packages=false' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJpYXQiOjE2Njg2MTA4NjQsImp0aSI6IjI4YTZjYTgyOWVkY2I4ZmQwZGM0ZWJhOWU4MGEzYjczMWViZGU5MzNhZjY4ZWQ5NzgxNjFkYjAzYmJkN2ZjYmUiLCJzY29wZSI6InJlZ2lzdHJhdGlvbiNnbG9iYWwgcmVnaXN0cmF0aW9uI2hvc3QifQ.8XMzFAo1MGD-fY_XpqW2go4MUQhh1Zx0jmTxQDpNBNY' | bash"
+    ignore_errors: true
+...

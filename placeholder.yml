@@ -1,0 +1,8 @@
+---
+- name: Placeholder
+  hosts: all
+
+  tasks:
+    - name: Hello World
+      debug:
+        msg: "Hello World!"
