@@ -11,7 +11,6 @@
   tasks:
   - ansible.builtin.include_tasks:
       file: provision_vm.yml
-      apply:
     loop: "{{ vm_info }}"
 
 
