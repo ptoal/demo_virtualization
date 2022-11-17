@@ -41,6 +41,7 @@
       validate_certs: false
 
   - name: Execute Registration Script
+    become: true
     command:
       cmd: ./sat_reg.sh
     ignore_errors: true
