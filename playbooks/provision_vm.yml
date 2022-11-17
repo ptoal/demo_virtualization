@@ -1,0 +1,52 @@
+---
+- name: Assert that RAM is less than 16384
+  ansible.builtin.assert:
+    that: vm_info.vm_memory <= 16384
+
+- name: Assert that CPUs are less than 4
+  ansible.builtin.assert:
+    that: vm_info.vm_cpus <= 4
+
+- name: Create the VM
+  community.vmware.vmware_guest:
+    datacenter: 'SagelyDC'
+    folder: /vm/Demo
+    resource_pool: Demo
+    name: '{{ vm_info.name }}'
+    state: poweredon
+    guest_id: rhel8_64Guest
+    annotation: "Test"
+    disk:
+      - size_gb: 20
+        type: thin
+        datastore: 'EVO2TB'
+    networks:
+      - name: DPG-Sandbox
+        dvswitch_name: DSwitch001
+        ip: '{{ vm_info.ip }}'
+        netmask: 255.255.240.0
+        gateway: 192.168.16.1
+        dns_servers:
+          - 192.168.16.1
+        start_connected: true
+        connected: true
+        type: static
+    hardware:
+      memory_mb: '{{ vm_info.vm_memory }}'
+      num_cpus: 2
+    customization:
+      dns_servers:
+        - 192.168.16.1
+      domain: demo.toal.ca
+      hostname: '{{ vm_info.name }}'
+    template: 'rhel81-x64-v1'
+    wait_for_ip_address: false
+  delegate_to: localhost
+  throttle: 1
+  register: new_vm_info
+
+- name: Add Host to Inventory
+  ansible.builtin.add_host:
+    name: '{{ vm_info.name }}'
+    group: 'rhel_guest'
+    ansible_host: '{{ vm_info.ip }}'
