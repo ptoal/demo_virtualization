@@ -7,29 +7,11 @@
     - ../vaults/template.yml
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
-    vm_info:
-      - name: rhel8-1
-        ip: 192.168.20.101
-        vm_memory: 4096
-        vm_cpus: 4
-      - name: rhel8-2
-        ip: 192.168.20.102
-        vm_memory: 4096
-        vm_cpus: 4
-      - name: rhel8-3
-        ip: 192.168.20.103
-        vm_memory: 4096
-        vm_cpus: 4
-      - name: rhel8-4
-        ip: 192.168.20.104
-        vm_memory: 4096
-        vm_cpus: 4
+
   tasks:
   - ansible.builtin.include_tasks:
       file: provision_vm.yml
       apply:
-        vars:
-          vm_info: "{{ item }}"
     loop: "{{ vm_info }}"
 
 
