@@ -60,6 +60,7 @@
       dest: ./sat_reg.sh
       mode: 0700
       validate_certs: false
+    throttle: 1
 
   - name: Execute Registration Script
     become: true
