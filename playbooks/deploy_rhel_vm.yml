@@ -9,12 +9,24 @@
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
 
   tasks:
-  - ansible.builtin.include_tasks:
-      file: provision_vm.yml
-    loop: "{{ vm_info }}"
+    - block:
+        - name: Assert that RAM is less than 16384
+          ansible.builtin.assert:
+            that: item.vm_memory <= 16384
+          loop: "{{ vm_info }}"
+
+        - name: Assert that CPUs are less than 4
+          ansible.builtin.assert:
+            that: item.vm_cpus <= 4
+          loop: "{{ vm_info }}"
 
 
-- name: Deploy RHEL8 VM
+    - ansible.builtin.include_tasks:
+        file: provision_vm.yml
+      loop: "{{ vm_info }}"
+
+
+- name: Base VM Config
   hosts: rhel_guest
   gather_facts: false
   vars_files:
@@ -26,6 +38,15 @@
   - name: Gather facts
     ansible.builtin.gather_facts:
 
+  - name: Deploy SSH Key
+    ansible.posix.authorized_key:
+      user: ansible
+      key: "ssh-rsa \
+      AAAAB3NzaC1yc2EAAAADAQABAAABAQDW56Muu/02TaGlycsYwHOJUIGCWBqnuw70t54D6tSDl6nk\
+      5pdB2QgOXndDgKF8tou5WhP4qMebHnig+M/gmVqOJHVfhOqYm/u/XJcO2h11qCIQqmRxASqUq9bk\
+      uJOEpjIClTm5x7Za9wjR/i3tIiaZxjdMPlZ7gRn4HzIL6o6+orvc7QgDPv2Fi0dvE796EpOp1rm6a\
+      i8l3Ejn+yYzEso8CL9m4tCh0/WEljO0wPTH+AEKHEDT2RlB0Si6ZCG8u0p/ivKLNJemVaMebEvTYE\
+      w1KqkVvbEvEd57Rbut3Qm3gIDUmjvsMPulJPC0QiD6+c53e729GA7EkHGfLCVM+gGd"
 
   # Ugly.  Please fix. :)
   - name: Download Satellite Registration script

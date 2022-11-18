@@ -1,0 +1,21 @@
+vm_info:
+- name: rhel8-1
+  ip: 192.168.20.101
+  vm_memory: 4096
+  vm_cpus: 4
+  app_name: AwesomeAppA
+- name: rhel8-2
+  ip: 192.168.20.102
+  vm_memory: 4096
+  vm_cpus: 4
+  app_name: AwesomeAppA
+- name: rhel8-3
+  ip: 192.168.20.103
+  vm_memory: 4096
+  vm_cpus: 4
+  app_name: AwesomeAppA
+- name: rhel8-4
+  ip: 192.168.20.104
+  vm_memory: 4096
+  vm_cpus: 4
+  app_name: AwesomeAppA

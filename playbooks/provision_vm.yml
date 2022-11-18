@@ -1,12 +1,4 @@
 ---
-- name: Assert that RAM is less than 16384
-  ansible.builtin.assert:
-    that: item.vm_memory <= 16384
-
-- name: Assert that CPUs are less than 4
-  ansible.builtin.assert:
-    that: item.vm_cpus <= 4
-
 - name: Create the VM
   community.vmware.vmware_guest:
     datacenter: 'SagelyDC'
@@ -44,6 +36,14 @@
   delegate_to: localhost
   throttle: 1
   register: new_vm_info
+
+- name: Set tags
+  community.vmware.vmware_tag_manager:
+    object_type: VirtualMachine
+    object_name: '{{ item.name }}'
+    tag_names:
+      - '{{ item.app_name }}'
+    state: add
 
 - name: Add Host to Inventory
   ansible.builtin.add_host:

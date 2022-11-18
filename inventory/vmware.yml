@@ -19,4 +19,9 @@ properties:
   - 'guest.ipAddress'
   - 'guest.guestFamily'
   - 'guest.ipStack'
+keyed_groups:
+- key: tag_category.Application
+  prefix: "vmware_tag_applicatoin_"
+  separator: ""
+with_nested_properties: True
 ...
