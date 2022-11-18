@@ -9,7 +9,7 @@ resources:
       - SagelyDC
     resources:
       - folder:
-        - Demo
+          - Demo
 hostnames:
   - 'config.name'
 properties:
