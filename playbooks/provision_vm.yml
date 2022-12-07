@@ -45,6 +45,7 @@
       - '{{ item.app_name }}'
     state: add
 
+
 - name: Add Host to Inventory
   ansible.builtin.add_host:
     name: '{{ item.name }}'
